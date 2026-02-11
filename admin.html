@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>RetailVision Admin | Demo Requests</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #0a0f1a;
+            --color-bg-card: #1e293b;
+            --color-bg-input: #0f172a;
+            --color-accent: #f97316;
+            --color-accent-hover: #ea580c;
+            --color-text: #f1f5f9;
+            --color-text-muted: #94a3b8;
+            --color-border: rgba(255, 255, 255, 0.1);
+            --color-success: #22c55e;
+            --color-error: #ef4444;
+            --font-body: 'Inter', sans-serif;
+            --font-heading: 'Outfit', sans-serif;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-bg);
+            color: var(--color-text);
+            min-height: 100vh;
+        }
+
+        /* Login Overlay */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--color-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        .login-overlay.hidden {
+            display: none;
+        }
+
+        .login-box {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: 1rem;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-box h1 {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-box p {
+            color: var(--color-text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--color-bg-input);
+            border: 1px solid var(--color-border);
+            border-radius: 0.5rem;
+            color: var(--color-text);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .login-box input:focus {
+            border-color: var(--color-accent);
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--color-accent);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .login-box button:hover {
+            background: var(--color-accent-hover);
+        }
+
+        .login-error {
+            color: var(--color-error);
+            font-size: 0.8rem;
+            margin-bottom: 0.75rem;
+            display: none;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .dashboard-header h1 {
+            font-family: var(--font-heading);
+            font-size: 1.75rem;
+        }
+
+        .dashboard-header h1 span {
+            color: var(--color-accent);
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            flex: 1;
+            min-width: 150px;
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .stat-box .value {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-accent);
+        }
+
+        .stat-box .label {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Table */
+        .table-wrapper {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: 0.75rem;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+
+        th,
+        td {
+            padding: 0.875rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--color-border);
+            font-size: 0.875rem;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.03);
+            font-weight: 600;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 1rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-new {
+            background: rgba(249, 115, 22, 0.15);
+            color: var(--color-accent);
+        }
+
+        .badge-contacted {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+        }
+
+        .badge-converted {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--color-success);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--color-text-muted);
+        }
+
+        .back-link {
+            color: var(--color-accent);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: opacity 0.2s;
+        }
+
+        .back-link:hover {
+            opacity: 0.8;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .logout-btn:hover {
+            border-color: var(--color-error);
+            color: var(--color-error);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                padding: 1rem;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Login -->
+    <div class="login-overlay" id="login-overlay">
+        <div class="login-box">
+            <h1>Admin Access</h1>
+            <p>Enter the admin password to view demo requests.</p>
+            <div class="login-error" id="login-error">Incorrect password. Please try again.</div>
+            <input type="password" id="admin-password" placeholder="Enter password" autofocus>
+            <button onclick="attemptLogin()">Sign In</button>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard" style="display:none;">
+        <div class="dashboard-header">
+            <div>
+                <h1>📊 Demo <span>Requests</span></h1>
+                <a href="index.html" class="back-link">← Back to Website</a>
+            </div>
+            <div style="display:flex;gap:0.5rem;">
+                <button class="logout-btn" onclick="loadRequests()"
+                    style="border-color:var(--color-accent);color:var(--color-accent);">↻ Refresh</button>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="stats-row" id="stats-row">
+            <div class="stat-box">
+                <div class="value" id="stat-total">0</div>
+                <div class="label">Total Requests</div>
+            </div>
+            <div class="stat-box">
+                <div class="value" id="stat-new">0</div>
+                <div class="label">New</div>
+            </div>
+            <div class="stat-box">
+                <div class="value" id="stat-today">0</div>
+                <div class="label">Today</div>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Company</th>
+                        <th>Store Type</th>
+                        <th>Phone</th>
+                        <th>Message</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="requests-body">
+                    <tr>
+                        <td colspan="8" class="empty-state">Loading demo requests...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA8ToLU2TL1hCgjbYMVE8XqHZ8AFkWegjI",
+            authDomain: "retailweb-e8af5.firebaseapp.com",
+            projectId: "retailweb-e8af5",
+            storageBucket: "retailweb-e8af5.firebasestorage.app",
+            messagingSenderId: "60102697716",
+            appId: "1:60102697716:web:08309763451d8c0aacf4a1",
+            measurementId: "G-JMHXQWC0KQ"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // --- Admin Password ---
+        // TODO: Change this to your desired admin password
+        const ADMIN_PASSWORD = 'retailvision2026';
+
+        function attemptLogin() {
+            const input = document.getElementById('admin-password');
+            const error = document.getElementById('login-error');
+
+            if (input.value === ADMIN_PASSWORD) {
+                sessionStorage.setItem('admin_auth', 'true');
+                showDashboard();
+            } else {
+                error.style.display = 'block';
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        // Allow Enter key for login
+        document.getElementById('admin-password').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') attemptLogin();
+        });
+
+        function logout() {
+            sessionStorage.removeItem('admin_auth');
+            location.reload();
+        }
+
+        function showDashboard() {
+            document.getElementById('login-overlay').classList.add('hidden');
+            document.getElementById('dashboard').style.display = 'block';
+            loadRequests();
+        }
+
+        // Check if already logged in
+        if (sessionStorage.getItem('admin_auth') === 'true') {
+            showDashboard();
+        }
+
+        // --- Load Requests ---
+        async function loadRequests() {
+            try {
+                const snapshot = await db.collection('demo_requests')
+                    .orderBy('submittedAt', 'desc')
+                    .get();
+
+                const tbody = document.getElementById('requests-body');
+                const requests = [];
+
+                snapshot.forEach(doc => {
+                    requests.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Stats
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const todayCount = requests.filter(r => {
+                    if (!r.submittedAt) return false;
+                    const d = r.submittedAt.toDate();
+                    return d >= today;
+                }).length;
+
+                const newCount = requests.filter(r => r.status === 'new').length;
+
+                document.getElementById('stat-total').textContent = requests.length;
+                document.getElementById('stat-new').textContent = newCount;
+                document.getElementById('stat-today').textContent = todayCount;
+
+                // Table
+                if (requests.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" class="empty-state">
+                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" style="margin:0 auto 1rem;display:block;opacity:0.4;">
+                            <rect x="8" y="14" width="48" height="36" rx="4" stroke="#94a3b8" stroke-width="2"/>
+                            <path d="M8 24h48" stroke="#94a3b8" stroke-width="2"/>
+                            <circle cx="14" cy="19" r="2" fill="#94a3b8"/>
+                            <circle cx="20" cy="19" r="2" fill="#94a3b8"/>
+                            <circle cx="26" cy="19" r="2" fill="#94a3b8"/>
+                            <path d="M20 36h24M24 42h16" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <strong style="display:block;margin-bottom:0.25rem;">No demo requests yet</strong>
+                        They will appear here once someone submits the form.
+                    </td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = requests.map(r => {
+                    const date = r.submittedAt ? r.submittedAt.toDate().toLocaleDateString('en-US', {
+                        year: 'numeric', month: 'short', day: 'numeric',
+                        hour: '2-digit', minute: '2-digit'
+                    }) : 'N/A';
+
+                    const statusClass = r.status === 'new' ? 'badge-new' :
+                        r.status === 'contacted' ? 'badge-contacted' :
+                            'badge-converted';
+
+                    return `<tr>
+                        <td>${escapeHtml(r.name || '')}</td>
+                        <td><a href="mailto:${escapeHtml(r.email || '')}" style="color:var(--color-accent);text-decoration:none;">${escapeHtml(r.email || '')}</a></td>
+                        <td>${escapeHtml(r.company || '-')}</td>
+                        <td>${escapeHtml(r.storeType || '-')}</td>
+                        <td>${escapeHtml(r.phone || '-')}</td>
+                        <td>${escapeHtml(r.message || '-')}</td>
+                        <td style="white-space:nowrap;">${date}</td>
+                        <td><span class="badge ${statusClass}">${escapeHtml(r.status || 'new')}</span></td>
+                    </tr>`;
+                }).join('');
+
+            } catch (error) {
+                console.error('Error loading requests:', error);
+                document.getElementById('requests-body').innerHTML =
+                    '<tr><td colspan="8" class="empty-state" style="color:var(--color-error);">Error loading requests. Check Firebase configuration.</td></tr>';
+            }
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+
+</html>
